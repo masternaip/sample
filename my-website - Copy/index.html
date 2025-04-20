@@ -3,15 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Movie Website</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Movie Website</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <h1>Popular Movies</h1>
+<body class="bg-gray-100">
+    <header class="bg-red-600 text-white py-4 shadow-md">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-semibold text-center">Popular Movies</h1>
+        </div>
     </header>
-    <main id="movie-container">
-        </main>
-    <script src="script.js"></script>
+    <main class="container mx-auto py-6 px-4">
+        <div id="movie-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            </div>
+    </main>
+
+    <script>
+        const apiKey = '7e863169c39e42ac68d117c538af97fc';
+        const apiUrl = 'https://api.themoviedb.org/3/movie/popular?api_key=' + apiKey;
+        const imageBaseUrl = 'https://image.tmdb.org/t/p/w500';
+        const movieContainer = document.getElementById('movie-container');
+
+        async function fetchMovies() {
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                displayMovies(data.results);
+            } catch (error) {
+                console.error('Error fetching movies:', error);
+                movieContainer.innerHTML = `<div class="text-red-500 text-center col-span-full">Failed to load movies.</div>`;
+            }
+        }
+
+        function displayMovies(movies) {
+            movieContainer.innerHTML = ''; // Clear previous content
+            movies.forEach(movie => {
+                const movieCard = document.createElement('div');
+                movieCard.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'overflow-hidden', 'transition-transform', 'hover:scale-105', 'cursor-pointer'); // Added cursor-pointer
+
+                movieCard.addEventListener('click', () => {
+                    // In a real application, you would replace this with code to:
+                    // 1.  Redirect to a streaming service
+                    // 2.  Show an embedded video player
+                    // 3.  Open a modal with more options
+                    alert(`Playing ${movie.title} (Implementation Placeholder)\n\nIn a real app, this would open a video player or redirect to a streaming service.`);
+                    //  For example you can use window.open(videoUrl, '_blank');
+
+                });
+
+                const posterPath = movie.poster_path ? imageBaseUrl + movie.poster_path : 'https://via.placeholder.com/150'; // Use a placeholder if no poster
+                const poster = document.createElement('img');
+                poster.src = posterPath;
+                poster.alt = movie.title;
+                poster.classList.add('w-full', 'h-auto');
+
+                const movieInfo = document.createElement('div');
+                movieInfo.classList.add('p-4');
+
+                const title = document.createElement('h2');
+                title.classList.add('text-lg', 'font-semibold', 'text-gray-800', 'truncate');
+                title.textContent = movie.title;
+
+                const rating = document.createElement('p');
+                rating.classList.add('text-gray-600', 'text-sm');
+                rating.textContent = 'Rating: ' + movie.vote_average;
+
+                movieInfo.appendChild(title);
+                movieInfo.appendChild(rating);
+                movieCard.appendChild(poster);
+                movieCard.appendChild(movieInfo);
+                movieContainer.appendChild(movieCard);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchMovies);
+    </script>
 </body>
 </html>
